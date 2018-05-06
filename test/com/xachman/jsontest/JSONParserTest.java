@@ -5,14 +5,9 @@
  */
 package com.xachman.jsontest;
 
-import com.codename1.io.JSONParser;
+import ca.weblite.codename1.json.JSONException;
 import com.codename1.testing.AbstractTest;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import ca.weblite.codename1.json.JSONObject;
 
 /**
  *
@@ -28,19 +23,18 @@ public class JSONParserTest  extends AbstractTest {
 
  	private void testBadJSON() {
 
-		String badJSON = "{\"key\": \"val\" \"key2\":\"val2\"}";
-
-		JSONParser json = new JSONParser();
-		try(Reader r = new InputStreamReader(new ByteArrayInputStream(badJSON.getBytes(StandardCharsets.UTF_8)))) {
-			Map<String, Object> data = json.parseJSON(r);
-			System.out.println(data);
-			assertEqual(0, data.size());
-
-			assertTrue(!data.containsKey("key"));	
-			assertTrue(!data.containsKey("key2"));	
-		}catch(IOException e){
-			log(e.getMessage());
-		}
-
+		assertException(new RuntimeException(), new Runnable() {
+			@Override
+			public void run() {
+				String badJSON = "{\"key\": \"val\" \"key2\":\"val2\"}";
+				
+				try {
+					new JSONObject(badJSON);
+				} catch(JSONException e) {
+					System.out.println(e.getMessage());	
+					throw new RuntimeException();
+				}
+			}
+		});
 	}
 }
